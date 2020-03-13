@@ -10,6 +10,11 @@
 		C04FE3FE2408342E00841912 /* NKDiffable.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C04FE3F42408342E00841912 /* NKDiffable.framework */; };
 		C04FE4032408342E00841912 /* NKDiffableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04FE4022408342E00841912 /* NKDiffableTests.swift */; };
 		C04FE4052408342E00841912 /* NKDiffable.h in Headers */ = {isa = PBXBuildFile; fileRef = C04FE3F72408342E00841912 /* NKDiffable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C04FE40F2408345700841912 /* NKTableViewDiffableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04FE40E2408345700841912 /* NKTableViewDiffableDataSource.swift */; };
+		C04FE4112408351600841912 /* NKOrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04FE4102408351600841912 /* NKOrderedSet.swift */; };
+		C04FE4152408356A00841912 /* NKDiffableDataSourceSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04FE4142408356A00841912 /* NKDiffableDataSourceSnapshot.swift */; };
+		C078954424111B32003F49DD /* NKCollectionViewDiffableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C078954324111B32003F49DD /* NKCollectionViewDiffableDataSource.swift */; };
+		C078954624111B45003F49DD /* NKDiffableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C078954524111B45003F49DD /* NKDiffableDataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +34,11 @@
 		C04FE3FD2408342E00841912 /* NKDiffableTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NKDiffableTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04FE4022408342E00841912 /* NKDiffableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NKDiffableTests.swift; sourceTree = "<group>"; };
 		C04FE4042408342E00841912 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C04FE40E2408345700841912 /* NKTableViewDiffableDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NKTableViewDiffableDataSource.swift; sourceTree = "<group>"; };
+		C04FE4102408351600841912 /* NKOrderedSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NKOrderedSet.swift; sourceTree = "<group>"; };
+		C04FE4142408356A00841912 /* NKDiffableDataSourceSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NKDiffableDataSourceSnapshot.swift; sourceTree = "<group>"; };
+		C078954324111B32003F49DD /* NKCollectionViewDiffableDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NKCollectionViewDiffableDataSource.swift; sourceTree = "<group>"; };
+		C078954524111B45003F49DD /* NKDiffableDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NKDiffableDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +83,11 @@
 			children = (
 				C04FE3F72408342E00841912 /* NKDiffable.h */,
 				C04FE3F82408342E00841912 /* Info.plist */,
+				C04FE4102408351600841912 /* NKOrderedSet.swift */,
+				C04FE4142408356A00841912 /* NKDiffableDataSourceSnapshot.swift */,
+				C078954524111B45003F49DD /* NKDiffableDataSource.swift */,
+				C078954324111B32003F49DD /* NKCollectionViewDiffableDataSource.swift */,
+				C04FE40E2408345700841912 /* NKTableViewDiffableDataSource.swift */,
 			);
 			path = NKDiffable;
 			sourceTree = "<group>";
@@ -148,6 +163,7 @@
 				TargetAttributes = {
 					C04FE3F32408342E00841912 = {
 						CreatedOnToolsVersion = 11.3.1;
+						LastSwiftMigration = 1130;
 					};
 					C04FE3FC2408342E00841912 = {
 						CreatedOnToolsVersion = 11.3.1;
@@ -195,6 +211,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C04FE40F2408345700841912 /* NKTableViewDiffableDataSource.swift in Sources */,
+				C04FE4112408351600841912 /* NKOrderedSet.swift in Sources */,
+				C078954624111B45003F49DD /* NKDiffableDataSource.swift in Sources */,
+				C04FE4152408356A00841912 /* NKDiffableDataSourceSnapshot.swift in Sources */,
+				C078954424111B32003F49DD /* NKCollectionViewDiffableDataSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,6 +361,7 @@
 		C04FE4092408342E00841912 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = PLZV595HH3;
@@ -348,6 +370,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = NKDiffable/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -356,6 +379,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zeusent.NKDiffable;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -364,6 +388,7 @@
 		C04FE40A2408342E00841912 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = PLZV595HH3;
@@ -372,6 +397,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = NKDiffable/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -388,9 +414,11 @@
 		C04FE40C2408342E00841912 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PLZV595HH3;
 				INFOPLIST_FILE = NKDiffableTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -406,9 +434,11 @@
 		C04FE40D2408342E00841912 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PLZV595HH3;
 				INFOPLIST_FILE = NKDiffableTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
