@@ -9,7 +9,8 @@ Pod::Spec.new do |s|
     s.source = { :git => 'https://github.com/nakkoservices/NKDiffable.git', :tag => s.version }
     
     s.ios.deployment_target = '10.0'
-
+    s.swift_versions = '5.1'
+    
     s.source_files = 'NKDiffable/**/*.swift'
     
     s.requires_arc = true
