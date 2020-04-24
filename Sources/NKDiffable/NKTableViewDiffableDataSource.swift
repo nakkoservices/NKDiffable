@@ -42,25 +42,29 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     
     open func apply(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
         if #available(iOS 13, *) {
-            uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
+            DispatchQueue.global().sync {
+                uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
+            }
         }
         else {
-            let oldSnapshot = currentSnapshot!
-            let differences = snapshot.difference(from: oldSnapshot)
-            
-            currentSnapshot = snapshot
-            
-            if #available(iOS 11, *), animatingDifferences {
-                tableView.performBatchUpdates({
+            DispatchQueue.global().sync {
+                guard let oldSnapshot = currentSnapshot else { return }
+                let differences = snapshot.difference(from: oldSnapshot)
+                
+                currentSnapshot = snapshot
+                
+                if #available(iOS 11, *), animatingDifferences {
+                    tableView.performBatchUpdates({
+                        applyDifferences(differences, for: snapshot, and: oldSnapshot)
+                    }) { (done) in completion?() }
+                } else {
+                    let areAnimationsEnabled = UIView.areAnimationsEnabled
+                    UIView.setAnimationsEnabled(animatingDifferences)
+                    tableView.beginUpdates()
                     applyDifferences(differences, for: snapshot, and: oldSnapshot)
-                }) { (done) in completion?() }
-            } else {
-                let areAnimationsEnabled = UIView.areAnimationsEnabled
-                UIView.setAnimationsEnabled(animatingDifferences)
-                tableView.beginUpdates()
-                applyDifferences(differences, for: snapshot, and: oldSnapshot)
-                tableView.endUpdates()
-                UIView.setAnimationsEnabled(areAnimationsEnabled)
+                    tableView.endUpdates()
+                    UIView.setAnimationsEnabled(areAnimationsEnabled)
+                }
             }
         }
     }
