@@ -41,24 +41,22 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
     }
 
     open func apply(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
+        objc_sync_enter(lock)
+        defer { objc_sync_exit(lock) }
         if #available(iOS 13, *) {
-            DispatchQueue.global().sync {
-                uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
-            }
+            uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
         }
         else {
-            DispatchQueue.global().sync {
-                guard let oldSnapshot = currentSnapshot else { return }
-                let differences = snapshot.difference(from: oldSnapshot)
-                
-                let areAnimationsEnabled = UIView.areAnimationsEnabled
-                UIView.setAnimationsEnabled(animatingDifferences)
-                collectionView.performBatchUpdates({
-                    currentSnapshot = snapshot
-                    applyDifferences(differences, for: snapshot, and: oldSnapshot)
-                }) { (done) in completion?() }
-                UIView.setAnimationsEnabled(areAnimationsEnabled)
-            }
+            guard let oldSnapshot = currentSnapshot else { return }
+            let differences = snapshot.difference(from: oldSnapshot)
+            
+            let areAnimationsEnabled = UIView.areAnimationsEnabled
+            UIView.setAnimationsEnabled(animatingDifferences)
+            collectionView.performBatchUpdates({
+                currentSnapshot = snapshot
+                applyDifferences(differences, for: snapshot, and: oldSnapshot)
+            }) { (done) in completion?() }
+            UIView.setAnimationsEnabled(areAnimationsEnabled)
         }
     }
     

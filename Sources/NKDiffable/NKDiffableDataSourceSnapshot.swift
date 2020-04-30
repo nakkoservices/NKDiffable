@@ -434,7 +434,6 @@ internal extension NKDiffableDataSourceSnapshot {
         }
         
         let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
-        print("[Time] Time elapsed: \(timeElapsed) s.")
         
         return differences
     }
