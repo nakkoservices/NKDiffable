@@ -358,8 +358,6 @@ internal extension NKDiffableDataSourceSnapshot {
     func difference(from oldSnapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>) -> [NKDiffableDataSourceSnapshotDifference<SectionIdentifierType, ItemIdentifierType>] {
         var differences: [NKDiffableDataSourceSnapshotDifference<SectionIdentifierType, ItemIdentifierType>] = []
         
-        let startTime = CFAbsoluteTimeGetCurrent()
-        
         switch (numberOfSections, oldSnapshot.numberOfSections) {
         case (0, 0):
             return []
@@ -432,8 +430,6 @@ internal extension NKDiffableDataSourceSnapshot {
         itemsToReload.forEach { (item) in
             differences.append(.itemReload(item))
         }
-        
-        let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
         
         return differences
     }
