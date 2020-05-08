@@ -42,24 +42,35 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     
     open func apply(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
         if #available(iOS 13, *) {
-            uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
+            DispatchQueue.global().sync {
+                uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
+            }
         }
         else {
-            guard let oldSnapshot = currentSnapshot else { return }
-            let differences = snapshot.difference(from: oldSnapshot)
-            if #available(iOS 11, *), animatingDifferences {
-                tableView.performBatchUpdates({
+            DispatchQueue.global().sync {
+                guard let oldSnapshot = currentSnapshot else { return }
+                let differences = snapshot.difference(from: oldSnapshot)
+                
+                if #available(iOS 11, *), animatingDifferences {
+                    tableView.performBatchUpdates({
+                        currentSnapshot = snapshot
+                        applyDifferences(differences, for: snapshot, and: oldSnapshot)
+                    }) { [weak self] (done) in
+                        self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
+                        completion?()
+                    }
+                } else {
+                    let areAnimationsEnabled = UIView.areAnimationsEnabled
+                    UIView.setAnimationsEnabled(animatingDifferences)
+                    tableView.beginUpdates()
                     currentSnapshot = snapshot
                     applyDifferences(differences, for: snapshot, and: oldSnapshot)
-                }) { (done) in completion?() }
-            } else {
-                let areAnimationsEnabled = UIView.areAnimationsEnabled
-                UIView.setAnimationsEnabled(animatingDifferences)
-                currentSnapshot = snapshot
-                tableView.beginUpdates()
-                applyDifferences(differences, for: snapshot, and: oldSnapshot)
-                tableView.endUpdates()
-                UIView.setAnimationsEnabled(areAnimationsEnabled)
+                    tableView.endUpdates()
+                    DispatchQueue.main.asyncAfter(deadline: .now()) { [weak self] in
+                        self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
+                    }
+                    UIView.setAnimationsEnabled(areAnimationsEnabled)
+                }
             }
         }
     }
@@ -94,6 +105,14 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
                 let toSectionIndex = snapshot.indexOfSection(toSectionIdentifier)!
                 let toIndex = snapshot.indexOfItem(itemIdentifier)!
                 tableView.moveRow(at: IndexPath(row: fromIndex, section: fromSectionIndex), to: IndexPath(row: toIndex, section: toSectionIndex))
+            default: break
+            }
+        }
+    }
+    
+    private func applyReloads(_ differences: [NKDiffableDataSourceSnapshotDifference<SectionIdentifierType, ItemIdentifierType>], for snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, and oldSnapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>) {
+        differences.forEach {
+            switch $0 {
             // Reloads
             case .sectionReload(let sectionIdentifier):
                 let index = snapshot.indexOfSection(sectionIdentifier)!
@@ -103,6 +122,7 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
                 let sectionIndex = snapshot.indexOfSection(sectionIdentifier)!
                 let index = snapshot.indexOfItem(itemIdentifier)!
                 tableView.reloadRows(at: [IndexPath(row: index, section: sectionIndex)], with: defaultRowAnimation)
+            default: break
             }
         }
     }

@@ -357,7 +357,6 @@ internal extension NKDiffableDataSourceSnapshot {
     
     func difference(from oldSnapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>) -> [NKDiffableDataSourceSnapshotDifference<SectionIdentifierType, ItemIdentifierType>] {
         var differences: [NKDiffableDataSourceSnapshotDifference<SectionIdentifierType, ItemIdentifierType>] = []
-        
         switch (numberOfSections, oldSnapshot.numberOfSections) {
         case (0, 0):
             return []
@@ -380,24 +379,36 @@ internal extension NKDiffableDataSourceSnapshot {
                 }
             }
         case (_, _):
+            var deletedSections: [Int] = []
+            var insertedSections: [Int] = []
+            
             let sectionDiff = oldSnapshot.sectionIdentifiers.nkDifference(from: sectionIdentifiers)
             
             for section in sectionDiff.removed {
+                deletedSections.append(oldSnapshot.indexOfSection(section)!)
                 differences.append(.sectionDelete(section))
             }
             
             for section in sectionDiff.inserted {
+                insertedSections.append(indexOfSection(section)!)
                 differences.append(.sectionInsert(section))
             }
             
             for section in sectionDiff.common {
-                if indexOfSection(section.0) != oldSnapshot.indexOfSection(section.0) {
-                    differences.append(.sectionMove(section.0))
+                if let newIndex = indexOfSection(section.0), let oldIndex = oldSnapshot.indexOfSection(section.0), newIndex != oldIndex {
+                    let diff = insertedSections.filter { $0 < newIndex }.count - deletedSections.filter { $0 < oldIndex }.count
+                    if newIndex - oldIndex != diff {
+                        differences.append(.sectionMove(section.0))
+                    }
                 }
+                
+                var deletedItems: [Int] = []
+                var insertedItems: [Int] = []
                 
                 let itemDiff = oldSnapshot.itemIdentifiers(inSection: section.0).nkDifference(from: itemIdentifiers(inSection: section.0))
                 
                 for item in itemDiff.removed {
+                    deletedItems.append(oldSnapshot.indexOfItem(item)!)
                     if !itemIdentifiers.contains(item) {
                         differences.append(.itemDelete(section.0, item))
                     }
@@ -407,28 +418,33 @@ internal extension NKDiffableDataSourceSnapshot {
                 }
                 
                 for item in itemDiff.inserted {
-                    if let oldItemSectionIdentifier = oldSnapshot.sectionIdentifier(containingItem: item) {
-                        differences.append(.itemMove(oldItemSectionIdentifier, section.0, item))
-                    }
-                    else {
+                    insertedItems.append(indexOfItem(item)!)
+                    if oldSnapshot.sectionIdentifier(containingItem: item) == nil {
                         differences.append(.itemInsert(section.0, item))
                     }
                 }
                 
                 for item in itemDiff.common {
-                    if indexOfItem(item.0) != oldSnapshot.indexOfItem(item.0) {
-                        differences.append(.itemMove(section.0, section.0, item.0))
+                    if let newIndex = indexOfItem(item.0), let oldIndex = oldSnapshot.indexOfItem(item.0), newIndex != oldIndex {
+                        let diff = insertedItems.filter { $0 < newIndex }.count - deletedItems.filter { $0 < oldIndex }.count
+                        if newIndex - oldIndex != diff {
+                            differences.append(.itemMove(section.0, section.0, item.0))
+                        }
                     }
                 }
             }
         }
         
         sectionsToReload.forEach { (section) in
-            differences.append(.sectionReload(section))
+            if oldSnapshot.sectionIdentifiers.contains(section) {
+                differences.append(.sectionReload(section))
+            }
         }
         
         itemsToReload.forEach { (item) in
-            differences.append(.itemReload(item))
+            if oldSnapshot.itemIdentifiers.contains(item) {
+                differences.append(.itemReload(item))
+            }
         }
         
         return differences

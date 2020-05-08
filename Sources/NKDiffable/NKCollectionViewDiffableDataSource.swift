@@ -41,22 +41,27 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
     }
 
     open func apply(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
-        objc_sync_enter(lock)
-        defer { objc_sync_exit(lock) }
         if #available(iOS 13, *) {
-            uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
+            DispatchQueue.global().sync {
+                uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
+            }
         }
         else {
-            guard let oldSnapshot = currentSnapshot else { return }
-            let differences = snapshot.difference(from: oldSnapshot)
-            
-            let areAnimationsEnabled = UIView.areAnimationsEnabled
-            UIView.setAnimationsEnabled(animatingDifferences)
-            collectionView.performBatchUpdates({
-                currentSnapshot = snapshot
-                applyDifferences(differences, for: snapshot, and: oldSnapshot)
-            }) { (done) in completion?() }
-            UIView.setAnimationsEnabled(areAnimationsEnabled)
+            DispatchQueue.global().sync {
+                guard let oldSnapshot = currentSnapshot else { return }
+                let differences = snapshot.difference(from: oldSnapshot)
+                
+                let areAnimationsEnabled = UIView.areAnimationsEnabled
+                UIView.setAnimationsEnabled(animatingDifferences)
+                collectionView.performBatchUpdates({
+                    currentSnapshot = snapshot
+                    applyDifferences(differences, for: snapshot, and: oldSnapshot)
+                }) { [weak self] (done) in
+                    self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
+                    completion?()
+                }
+                UIView.setAnimationsEnabled(areAnimationsEnabled)
+            }
         }
     }
     
@@ -90,6 +95,14 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
                 let toSectionIndex = snapshot.indexOfSection(toSectionIdentifier)!
                 let toIndex = snapshot.indexOfItem(itemIdentifier)!
                 collectionView.moveItem(at: IndexPath(row: fromIndex, section: fromSectionIndex), to: IndexPath(row: toIndex, section: toSectionIndex))
+            default: break
+            }
+        }
+    }
+    
+    private func applyReloads(_ differences: [NKDiffableDataSourceSnapshotDifference<SectionIdentifierType, ItemIdentifierType>], for snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, and oldSnapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>) {
+        differences.forEach {
+            switch $0 {
             // Reloads
             case .sectionReload(let sectionIdentifier):
                 let index = snapshot.indexOfSection(sectionIdentifier)!
@@ -99,6 +112,7 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
                 let sectionIndex = snapshot.indexOfSection(sectionIdentifier)!
                 let index = snapshot.indexOfItem(itemIdentifier)!
                 collectionView.reloadItems(at: [IndexPath(row: index, section: sectionIndex)])
+            default: break
             }
         }
     }

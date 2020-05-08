@@ -9,15 +9,9 @@ import Foundation
 
 open class NKDiffableDataSource<SectionIdentifierType, ItemIdentifierType>: NSObject where SectionIdentifierType: Hashable, ItemIdentifierType: Hashable {
     
-    final private(set) lazy var lock: NSObject = {
-        return NSObject()
-    }()
-    
     internal var currentSnapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>!
     
     open func snapshot() -> NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType> {
-        objc_sync_enter(lock)
-        defer { objc_sync_exit(lock) }
         var newSnapshot = NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>()
         newSnapshot = currentSnapshot
         newSnapshot.sectionsToReload = []
