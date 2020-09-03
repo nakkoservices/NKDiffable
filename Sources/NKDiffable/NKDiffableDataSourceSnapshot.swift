@@ -42,7 +42,7 @@ private struct _NKDiffableDataSourceSnapshotSection<SectionIdentifierType, ItemI
 
 public struct NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType> where SectionIdentifierType : Hashable, ItemIdentifierType : Hashable {
     
-    @available(iOS 13, *)
+    @available(iOS 13, tvOS 13, *)
     internal func nsSnapshot() -> NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType> {
         var snapshot = NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>()
         snapshot.appendSections(sectionIdentifiers)
@@ -54,7 +54,7 @@ public struct NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifier
         return snapshot
     }
     
-    @available(iOS 13, *)
+    @available(iOS 13, tvOS 13, *)
     init(_ snapshot: NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>) {
         self.init()
         appendSections(snapshot.sectionIdentifiers)
