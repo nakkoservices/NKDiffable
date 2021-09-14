@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 open class NKDiffableDataSource<SectionIdentifierType, ItemIdentifierType>: NSObject where SectionIdentifierType: Hashable, ItemIdentifierType: Hashable {
     
     internal var currentSnapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>!

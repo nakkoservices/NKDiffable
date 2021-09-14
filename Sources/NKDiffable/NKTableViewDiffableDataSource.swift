@@ -28,13 +28,15 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     
     public init(tableView: UITableView, cellProvider: @escaping CellProvider) {
         super.init()
+        
+        self.tableView = tableView
+        
         if #available(iOS 13, tvOS 13, *) {
             uiDataSource = UITableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType>(tableView: tableView, cellProvider: cellProvider)
             tableView.dataSource = self
         }
         else {
             self.currentSnapshot = NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>()
-            self.tableView = tableView
             self.cellProvider = cellProvider
             self.tableView.dataSource = self
         }
@@ -43,7 +45,9 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     open func apply(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
         if #available(iOS 13, tvOS 13, *) {
             DispatchQueue.global().sync {
+                tableView.dataSource = uiDataSource
                 uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
+                tableView.dataSource = self
             }
         }
         else {

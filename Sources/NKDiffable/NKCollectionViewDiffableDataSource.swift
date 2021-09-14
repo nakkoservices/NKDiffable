@@ -28,13 +28,15 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
     
     public init(collectionView: UICollectionView, cellProvider: @escaping CellProvider) {
         super.init()
+        
+        self.collectionView = collectionView
+        
         if #available(iOS 13, tvOS 13, *) {
             uiDataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: cellProvider)
             collectionView.dataSource = self
         }
         else {
             self.currentSnapshot = NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>()
-            self.collectionView = collectionView
             self.cellProvider = cellProvider
             self.collectionView.dataSource = self
         }
@@ -43,7 +45,9 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
     open func apply(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
         if #available(iOS 13, tvOS 13, *) {
             DispatchQueue.global().sync {
+                collectionView.dataSource = uiDataSource
                 uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
+                collectionView.dataSource = self
             }
         }
         else {
