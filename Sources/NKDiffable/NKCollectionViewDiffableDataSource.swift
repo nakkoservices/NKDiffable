@@ -41,13 +41,12 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
             self.collectionView.dataSource = self
         }
     }
-
+    
     open func apply(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
         if #available(iOS 13, tvOS 13, *) {
             DispatchQueue.global().sync {
                 collectionView.dataSource = uiDataSource
                 uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
-                collectionView.dataSource = self
             }
         }
         else {
@@ -66,6 +65,18 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
                 }
                 UIView.setAnimationsEnabled(areAnimationsEnabled)
             }
+        }
+    }
+    
+    public func applySnapshotUsingReloadData(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, completion: (() -> Void)? = nil) {
+        if #available(iOS 15, tvOS 15, *) {
+            DispatchQueue.global().sync {
+                collectionView.dataSource = uiDataSource
+                uiDataSource.applySnapshotUsingReloadData(snapshot.nsSnapshot(), completion: completion)
+            }
+        }
+        else {
+            apply(snapshot, animatingDifferences: false, completion: completion)
         }
     }
     

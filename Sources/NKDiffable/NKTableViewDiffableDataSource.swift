@@ -47,7 +47,6 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
             DispatchQueue.global().sync {
                 tableView.dataSource = uiDataSource
                 uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
-                tableView.dataSource = self
             }
         }
         else {
@@ -76,6 +75,18 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
                     UIView.setAnimationsEnabled(areAnimationsEnabled)
                 }
             }
+        }
+    }
+    
+    public func applySnapshotUsingReloadData(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, completion: (() -> Void)? = nil) {
+        if #available(iOS 15, tvOS 15, *) {
+            DispatchQueue.global().sync {
+                tableView.dataSource = uiDataSource
+                uiDataSource.applySnapshotUsingReloadData(snapshot.nsSnapshot(), completion: completion)
+            }
+        }
+        else {
+            apply(snapshot, animatingDifferences: false, completion: completion)
         }
     }
     
