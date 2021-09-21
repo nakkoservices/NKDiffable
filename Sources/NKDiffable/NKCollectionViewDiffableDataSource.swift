@@ -31,7 +31,7 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
         
         self.collectionView = collectionView
         
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             uiDataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: cellProvider)
             collectionView.dataSource = self
         }
@@ -43,7 +43,7 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
     }
     
     open func apply(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             DispatchQueue.global().sync {
                 collectionView.dataSource = uiDataSource
                 uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
@@ -69,7 +69,7 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
     }
     
     public func applySnapshotUsingReloadData(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, completion: (() -> Void)? = nil) {
-        if #available(iOS 15, tvOS 15, *) {
+        if #available(iOS 16, tvOS 16, *) {
             DispatchQueue.global().sync {
                 collectionView.dataSource = uiDataSource
                 uiDataSource.applySnapshotUsingReloadData(snapshot.nsSnapshot(), completion: completion)
@@ -133,21 +133,21 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
     }
     
     open override func snapshot() -> NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType> {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return NKDiffableDataSourceSnapshot(uiDataSource.snapshot())
         }
         return super.snapshot()
     }
     
     open override func itemIdentifier(for indexPath: IndexPath) -> ItemIdentifierType? {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.itemIdentifier(for: indexPath)
         }
         return super.itemIdentifier(for: indexPath)
     }
 
     open override func indexPath(for itemIdentifier: ItemIdentifierType) -> IndexPath? {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.indexPath(for: itemIdentifier)
         }
         return super.indexPath(for: itemIdentifier)
@@ -156,21 +156,21 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
     // MARK: - UICollectionViewDataSource
 
     open func numberOfSections(in collectionView: UICollectionView) -> Int {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.numberOfSections(in: collectionView)
         }
         return currentSnapshot.numberOfSections
     }
 
     open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.collectionView(collectionView, numberOfItemsInSection: section)
         }
         return currentSnapshot.itemIdentifiers(inSection: currentSnapshot.sectionIdentifiers[section]).count
     }
 
     open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.collectionView(collectionView, cellForItemAt: indexPath)
         }
         
@@ -186,41 +186,41 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
     }
 
     open func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.collectionView(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
         }
         return UICollectionReusableView(frame: .zero)
     }
 
     open func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.collectionView(collectionView, canMoveItemAt: indexPath)
         }
         return false
     }
 
     open func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             uiDataSource.collectionView(collectionView, moveItemAt: sourceIndexPath, to: destinationIndexPath)
         }
     }
 
     open func indexTitles(for collectionView: UICollectionView) -> [String]? {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.indexTitles(for: collectionView)
         }
         return nil
     }
     
     open func collectionView(_ collectionView: UICollectionView, indexPathForIndexTitle title: String, at index: Int) -> IndexPath {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.collectionView(collectionView, indexPathForIndexTitle: title, at: index)
         }
         return IndexPath(row: 0, section: 0)
     }
 
     open func description() -> String {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.description()
         }
         return description

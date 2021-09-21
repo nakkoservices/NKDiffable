@@ -31,7 +31,7 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
         
         self.tableView = tableView
         
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             uiDataSource = UITableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType>(tableView: tableView, cellProvider: cellProvider)
             tableView.dataSource = self
         }
@@ -43,7 +43,7 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     }
     
     open func apply(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             DispatchQueue.global().sync {
                 tableView.dataSource = uiDataSource
                 uiDataSource.apply(snapshot.nsSnapshot(), animatingDifferences: animatingDifferences, completion: completion)
@@ -71,6 +71,7 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
                     tableView.endUpdates()
                     DispatchQueue.main.asyncAfter(deadline: .now()) { [weak self] in
                         self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
+                        completion?()
                     }
                     UIView.setAnimationsEnabled(areAnimationsEnabled)
                 }
@@ -79,7 +80,7 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     }
     
     public func applySnapshotUsingReloadData(_ snapshot: NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, completion: (() -> Void)? = nil) {
-        if #available(iOS 15, tvOS 15, *) {
+        if #available(iOS 16, tvOS 16, *) {
             DispatchQueue.global().sync {
                 tableView.dataSource = uiDataSource
                 uiDataSource.applySnapshotUsingReloadData(snapshot.nsSnapshot(), completion: completion)
@@ -143,21 +144,21 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     }
     
     open override func snapshot() -> NKDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType> {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return NKDiffableDataSourceSnapshot(uiDataSource.snapshot())
         }
         return super.snapshot()
     }
     
     open override func itemIdentifier(for indexPath: IndexPath) -> ItemIdentifierType? {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.itemIdentifier(for: indexPath)
         }
         return super.itemIdentifier(for: indexPath)
     }
 
     open override func indexPath(for itemIdentifier: ItemIdentifierType) -> IndexPath? {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.indexPath(for: itemIdentifier)
         }
         return super.indexPath(for: itemIdentifier)
@@ -166,7 +167,7 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     private var _defaultRowAnimation: UITableView.RowAnimation = .fade
     open var defaultRowAnimation: UITableView.RowAnimation {
         set {
-            if #available(iOS 13, tvOS 13, *) {
+            if #available(iOS 16, tvOS 16, *) {
                 uiDataSource.defaultRowAnimation = newValue
             }
             else {
@@ -174,7 +175,7 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
             }
         }
         get {
-            if #available(iOS 13, tvOS 13, *) {
+            if #available(iOS 16, tvOS 16, *) {
                 return uiDataSource.defaultRowAnimation
             }
             else {
@@ -186,21 +187,21 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     // MARK: - UITableViewDataSource
     
     open func numberOfSections(in tableView: UITableView) -> Int {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.numberOfSections(in: tableView)
         }
         return currentSnapshot.numberOfSections
     }
     
     open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.tableView(tableView, numberOfRowsInSection: section)
         }
         return currentSnapshot.itemIdentifiers(inSection: currentSnapshot.sectionIdentifiers[section]).count
     }
     
     open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.tableView(tableView, cellForRowAt: indexPath)
         }
         
@@ -216,61 +217,61 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
     }
     
     open func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.tableView(tableView, titleForHeaderInSection: section)
         }
         return nil
     }
     
     open func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.tableView(tableView, titleForFooterInSection: section)
         }
         return nil
     }
     
     open func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.tableView(tableView, canEditRowAt: indexPath)
         }
         return false
     }
     
     open func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             uiDataSource.tableView(tableView, commit: editingStyle, forRowAt: indexPath)
         }
     }
     
     open func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.tableView(tableView, canMoveRowAt: indexPath)
         }
         return true
     }
     
     open func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             uiDataSource.tableView(tableView, moveRowAt: sourceIndexPath, to: destinationIndexPath)
         }
     }
     
     open func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.sectionIndexTitles(for: tableView)
         }
         return nil
     }
     
     open func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.tableView(tableView, sectionForSectionIndexTitle: title, at: index)
         }
         return 0
     }
     
     open func description() -> String {
-        if #available(iOS 13, tvOS 13, *) {
+        if #available(iOS 16, tvOS 16, *) {
             return uiDataSource.description()
         }
         return description
