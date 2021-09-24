@@ -54,7 +54,7 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
                 guard let oldSnapshot = currentSnapshot else { return }
                 let differences = snapshot.difference(from: oldSnapshot)
                 
-                if #available(iOS 11, tvOS 11, *), animatingDifferences {
+                if animatingDifferences {
                     tableView.performBatchUpdates({
                         currentSnapshot = snapshot
                         applyDifferences(differences, for: snapshot, and: oldSnapshot)
@@ -62,18 +62,11 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
                         self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
                         completion?()
                     }
-                } else {
-                    let areAnimationsEnabled = UIView.areAnimationsEnabled
-                    UIView.setAnimationsEnabled(animatingDifferences)
-                    tableView.beginUpdates()
+                }
+                else {
                     currentSnapshot = snapshot
-                    applyDifferences(differences, for: snapshot, and: oldSnapshot)
-                    tableView.endUpdates()
-                    DispatchQueue.main.asyncAfter(deadline: .now()) { [weak self] in
-                        self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
-                        completion?()
-                    }
-                    UIView.setAnimationsEnabled(areAnimationsEnabled)
+                    tableView.reloadData()
+                    completion?()
                 }
             }
         }
