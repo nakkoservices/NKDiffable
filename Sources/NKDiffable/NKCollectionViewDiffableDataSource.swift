@@ -54,19 +54,21 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
                 guard let oldSnapshot = currentSnapshot else { return }
                 let differences = snapshot.difference(from: oldSnapshot)
                 
-                if animatingDifferences {
-                    collectionView.performBatchUpdates({
-                        currentSnapshot = snapshot
-                        applyDifferences(differences, for: snapshot, and: oldSnapshot)
-                    }) { [weak self] (done) in
-                        self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
-                        completion?()
-                    }
+                if !animatingDifferences {
+                    CATransaction.begin()
+                    CATransaction.setDisableActions(true)
                 }
-                else {
+                
+                collectionView.performBatchUpdates({
                     currentSnapshot = snapshot
-                    collectionView.reloadData()
+                    applyDifferences(differences, for: snapshot, and: oldSnapshot)
+                }) { [weak self] (done) in
+                    self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
                     completion?()
+                }
+                
+                if !animatingDifferences {
+                    CATransaction.commit()
                 }
             }
         }

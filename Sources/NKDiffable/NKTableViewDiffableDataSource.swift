@@ -54,19 +54,21 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
                 guard let oldSnapshot = currentSnapshot else { return }
                 let differences = snapshot.difference(from: oldSnapshot)
                 
-                if animatingDifferences {
-                    tableView.performBatchUpdates({
-                        currentSnapshot = snapshot
-                        applyDifferences(differences, for: snapshot, and: oldSnapshot)
-                    }) { [weak self] (done) in
-                        self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
-                        completion?()
-                    }
+                if !animatingDifferences {
+                    CATransaction.begin()
+                    CATransaction.setDisableActions(true)
                 }
-                else {
+                
+                tableView.performBatchUpdates({
                     currentSnapshot = snapshot
-                    tableView.reloadData()
+                    applyDifferences(differences, for: snapshot, and: oldSnapshot)
+                }) { [weak self] (done) in
+                    self?.applyReloads(differences, for: snapshot, and: oldSnapshot)
                     completion?()
+                }
+                
+                if !animatingDifferences {
+                    CATransaction.commit()
                 }
             }
         }
