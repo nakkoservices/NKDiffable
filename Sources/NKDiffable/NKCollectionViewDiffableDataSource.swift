@@ -82,7 +82,8 @@ open class NKCollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentif
             }
         }
         else {
-            apply(snapshot, animatingDifferences: false, completion: completion)
+            currentSnapshot = snapshot
+            collectionView.reloadData()
         }
     }
     

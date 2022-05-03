@@ -82,7 +82,8 @@ open class NKTableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierTy
             }
         }
         else {
-            apply(snapshot, animatingDifferences: false, completion: completion)
+            currentSnapshot = snapshot
+            tableView.reloadData()
         }
     }
     
